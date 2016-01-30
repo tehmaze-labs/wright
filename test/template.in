@@ -1,0 +1,15 @@
+This is a test template:
+
+LDFLAGS = {{ lib('rt') }} {{ lib('bsd', True) }}
+
+Example generating config.h:
+
+{% for key, value in env.items()|sort %}{% if key.startswith('HAVE_') %}{% if value %}
+#define {{ key }} 1
+{% else %}
+/* #undef {{ key }} */
+{% endif %}{% endif %}{% endfor %}
+
+{% if have('errno.h') %}
+All looking good \o/
+{% endif %}

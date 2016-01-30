@@ -1,0 +1,51 @@
+This is a test template:
+
+LDFLAGS = -lrt 
+
+Example generating config.h:
+
+#define HAVE_ARPA_INET_H 1
+#define HAVE_BINARY_LITERALS 1
+#define HAVE_CTYPE_H 1
+/* #undef HAVE_DEV_EPOLL */
+/* #undef HAVE_EPOLL */
+#define HAVE_ERRNO_H 1
+#define HAVE_GETLINE 1
+#define HAVE_IF_INDEXTONAME 1
+#define HAVE_INLINE 1
+#define HAVE_INTTYPES_H 1
+#define HAVE_KQUEUE 1
+/* #undef HAVE_LIBBSD */
+#define HAVE_LIBC_IPV6 1
+#define HAVE_LIBC_SCOPE_ID 1
+#define HAVE_LIBGEN_H 1
+#define HAVE_LIBM 1
+#define HAVE_LIBPORTAUDIO 1
+#define HAVE_LIBPROC 1
+#define HAVE_LIBTALLOC 1
+/* #undef HAVE_MINGW */
+#define HAVE_NETINET_IP_H 1
+#define HAVE_NETINET_UDP_H 1
+#define HAVE_NET_ETHERNET_H 1
+#define HAVE_PKG_CONFIG 1
+#define HAVE_POLL 1
+#define HAVE_PTHREAD_H 1
+#define HAVE_RESTRICT 1
+#define HAVE_SELECT 1
+#define HAVE_SIGNAL_H 1
+#define HAVE_SOCKLEN_T 1
+/* #undef HAVE_SO_REUSEADDR */
+/* #undef HAVE_SO_REUSEPORT */
+#define HAVE_STDARG_H 1
+#define HAVE_STDBOOL_H 1
+#define HAVE_STDDEF_H 1
+#define HAVE_STDIO_H 1
+#define HAVE_STDLIB_H 1
+#define HAVE_STRING_H 1
+#define HAVE_STRTOK_R 1
+#define HAVE_SYS_PARAM_H 1
+#define HAVE_TIME_H 1
+#define HAVE_VISIBILITY_ATTRIBUTE 1
+#define HAVE_VISIBILITY_DECLSPEC 1
+
+All looking good \o/
