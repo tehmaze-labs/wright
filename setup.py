@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='wright',
-    version='0.1.0',
+    version='0.1.1',
     description='Leight weight (C) project configurator',
     long_description="""
 Yet Another Build Tool
@@ -39,5 +39,8 @@ You can issue a ticket in GitHub: https://github.com/tehmaze-labs/wright/issues
         'console_scripts': [
             'wright=wright.main:main',
         ],
-    }
+    },
+    install_requires=[
+        'Jinja2',
+    ],
 )
