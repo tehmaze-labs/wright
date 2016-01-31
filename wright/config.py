@@ -14,6 +14,20 @@ class Config(RawConfigParser):
 
     def add_arguments(self, parser):
         group = parser.add_argument_group('build options')
+        if self.has_option('configure', 'option'):
+            for arg in self.getlist('configure', 'option'):
+                key, value = arg.split(':', 1)
+                value = value.strip()
+                if ' ' in value:
+                    default, help_text = value.split(' ', 1)
+                else:
+                    default = value
+                    help_text = ''
+                group.add_argument(
+                    '--' + key,
+                    default=default,
+                    help=help_text,
+                )
         if self.has_option('configure', 'with'):
             for arg in self.getlist('configure', 'with'):
                 key, value = arg.split(':', 1)
