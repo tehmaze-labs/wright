@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='wright',
-    version='0.1.1',
+    version='0.1.2',
     description='Leight weight (C) project configurator',
     long_description="""
 Yet Another Build Tool
