@@ -110,6 +110,15 @@ class Flags(CheckExecOutput):
         return True
 
 
+class Set(Check):
+    order = 10
+    quiet = True
+
+    def __call__(self, key, value):
+        self.env[key] = ' '.join(value)
+        return True
+
+
 class Versions(Check):
 
     """Generate semantic version numbers from a versions file.
@@ -163,6 +172,7 @@ class Env(Stage):
             'binary':   CheckWhich(self),
             'generate': Generate(self),
             'flags':    Flags(self),
+            'set':      Set(self),
             'versions': Versions(self),
         }
 

@@ -38,7 +38,7 @@ def main():
     # configuration file.
     args, remaining_args = parser.parse_known_args()
 
-    env = Environment()
+    env = Environment(args.platform)
     env.update(os.environ)
     for item in args.env:
         part = item.split('=', 1)
@@ -72,8 +72,7 @@ def main():
 
     # Feed back the build options to our environment
     for key, value in args.__dict__.items():
-        if key.startswith('with_'):
-            env[key.upper()] = value
+        env[key.upper()] = value
 
     log = Logger(args.log)
 

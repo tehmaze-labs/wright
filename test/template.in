@@ -18,3 +18,9 @@ with foo: {% if with('foo') %}yes{% else %}no{% endif %}
 with bar: {% if with('bar') %}yes{% else %}no{% endif %}
 
 version: {{ WRIGHT_VERSION }}
+
+And here is a dump of the generated environment:
+
+{% for key, value in env.items()|sort -%}
+{{ key }}={{ value }}
+{% endfor %}

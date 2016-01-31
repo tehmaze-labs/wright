@@ -61,6 +61,33 @@ class OrderedSet(collections.MutableSet):
 
 
 class Environment(dict):
+    defaults = {
+        'linux': {
+            'BINEXT': '',
+            'ARLIBPRE': 'lib',
+            'ARLIBEXT': '.a',
+            'SHLIBPRE': 'lib',
+            'SHLIBEXT': '.so',
+        },
+        'osx': {
+            'BINEXT': '',
+            'ARLIBPRE': 'lib',
+            'ARLIBEXT': '.a',
+            'SHLIBPRE': 'lib',
+            'SHLIBEXT': '.dylib',
+        },
+        'win32': {
+            'BINEXT':   '.exe',
+            'ARLIBPRE': 'lib',
+            'ARLIBEXT': '.a',
+            'SHLIBPRE': '',
+            'SHLIBEXT': '.dll',
+        },
+    }
+
+    def __init__(self, platform):
+        self.update(self.defaults.get(platform, {}))
+
     def merge(self, other):
         """Merge other (dict or OrderedSet) into this environment.
 
