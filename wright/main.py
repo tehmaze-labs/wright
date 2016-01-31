@@ -28,7 +28,9 @@ def main():
         help='target platform (default: {})'.format(platform))
     # Cross compiling options
     group = parser.add_argument_group('compiler options')
-    group.add_argument('--cross-execute', default='', metavar='<..>',
+    group.add_argument('--cross-compile', default='', metavar='<prefix>',
+        help='cross compile prefix (default: none)')
+    group.add_argument('--cross-execute', default='', metavar='<exec>',
         help='cross execute wrapper (default: none)')
     # The rest of the arguments may be environment settings
     parser.add_argument('env', metavar='key=value', nargs='*',
