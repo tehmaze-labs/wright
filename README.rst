@@ -1,5 +1,5 @@
-&#x2692; Wright
-===============
+⚒ Wright
+========
 
 Yet Another Build Tool
 ----------------------
