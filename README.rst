@@ -1,5 +1,8 @@
+&#x2692; Wright
+===============
+
 Yet Another Build Tool
-======================
+----------------------
 
 There are plenty of awesome configurators out there, but they are all way too
 complicated for most of my project needs. Wright uses a simple modular stage
@@ -8,11 +11,11 @@ etc.
 
 
 Example Usage
-=============
+-------------
 
 Inspect the test directory at https://github.com/tehmaze-labs/wright/tree/master/test
 
 
 Bugs/Features
-=============
+-------------
 You can issue a ticket in GitHub: https://github.com/tehmaze-labs/wright/issues
