@@ -1,6 +1,20 @@
 import shlex
 
 from .base import Check, CheckExec, Stage, TempFile
+from ..util import parse_flags
+
+
+class CheckEnv(Check):
+    order = 50
+    quiet = True
+
+    def __call__(self, *args):
+        for arg in args:
+            if not arg:
+                continue
+            arg = arg.format(**self.env)
+            self.env.merge(parse_flags(arg))
+        return True
 
 
 class CheckCompile(CheckExec):
@@ -16,7 +30,9 @@ class CheckCompile(CheckExec):
             except KeyError:
                 pass
 
-        self.output.write(repr(self.env))
+        for path in self.env.get('LIBPATH', []):
+            args += ('-L' + path,)
+
         for inc in self.env.get('INCLUDES', []):
             args += ('-I' + inc,)
 
@@ -105,6 +121,7 @@ class C(Stage):
     def __init__(self, *args, **kwargs):
         super(C, self).__init__(*args, **kwargs)
         self._check = {
+            'env':     CheckEnv(self),
             'compile': CheckCompile(self),
             'define':  CheckDefine(self),
             'feature': CheckFeature(self),
