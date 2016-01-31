@@ -1,7 +1,7 @@
 try:
-    from configparser import RawConfigParser
+    from configparser import NoSectionError, RawConfigParser
 except ImportError:
-    from ConfigParser import RawConfigParser
+    from ConfigParser import NoSectionError, RawConfigParser
 
 from .util import parse_bool, yield_from
 
@@ -40,7 +40,15 @@ class Config(RawConfigParser):
                     help='Build ' + ['with', 'without'][int(value)] + ' ' + key,
                 )
 
-    def getbool(self, section, option, default=False):
+    def get(self, section, option, default=None):
+        try:
+            return RawConfigParser.get(self, section, option)
+        except NoSectionError:
+            if default is None:
+                raise
+            return default
+
+    def getboolean(self, section, option, default=False):
         if not self.has_option(section, option):
             return default
         return parse_bool(self.get(section, option),

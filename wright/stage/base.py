@@ -17,6 +17,7 @@ except NameError:
 
 
 class Check(object):
+    cache = True
     order = 100
     quiet = False
 
@@ -88,8 +89,9 @@ class Stage(object):
         'blue':   '\x1b[1;34m',
     }
 
-    def __init__(self, config, env={}, output=sys.stderr):
+    def __init__(self, config, cache, env={}, output=sys.stderr):
         self.config = config
+        self.cache = cache
         self.env = env
         self.x_pos = 0
         self.output = output
@@ -113,19 +115,20 @@ class Stage(object):
     def checking(self, what):
         self.echo('checking {}...'.format(what))
 
-    def echo(self, what, color='normal'):
+    def echo(self, what, color='normal', append=''):
         what = str(what)
         self.x_pos += len(what)
         sys.stdout.write(''.join([
             self.color[color],
             what,
             self.color['normal'],
+            append,
         ]))
         sys.stdout.flush()
 
-    def echo_result(self, result, color='normal'):
+    def echo_result(self, result, color='normal', append='\n'):
         pad = ' ' * max(0, 64 - self.x_pos)
-        self.echo(pad + result + '\n', color=color)
+        self.echo(pad + result, color=color, append=append)
         self.x_pos = 0
 
     def run(self, check):
@@ -151,7 +154,17 @@ class Stage(object):
 
         if not test.quiet:
             self.checking(' '.join([check, name]))
-        if test(name, args):
+
+        if test.cache and (check, name, args) in self.cache:
+            if self.cache[(check, name, args)]:
+                if not test.quiet:
+                    self.echo_result('yes', color='green', append=' (cached)\n')
+                return True
+
+        result = test(name, args)
+        if result:
+            if test.cache:
+                self.cache[(check, name, args)] = result
             if not test.quiet:
                 self.echo_result('yes', color='green')
             return True

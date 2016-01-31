@@ -5,6 +5,7 @@ import os
 import sys
 
 from .config import Config
+from .cache import Cache
 from .log import Logger
 from .util import Environment, camel_case, detect_platform, parse_flags, import_module
 
@@ -20,6 +21,8 @@ def main():
     group = parser.add_argument_group('wright options')
     group.add_argument('--help-options', action='store_true',
         help='show build options')
+    group.add_argument('--cache', default='wright.cache', metavar='<file>',
+        help='write configuration cache (default: wright.cache)')
     group.add_argument('--config', default='wright.ini', metavar='<file>',
         help='wright configuration (default: wright.ini)')
     group.add_argument('--log', default='wright.log', metavar='<file>',
@@ -51,6 +54,8 @@ def main():
     for key in ('ARFLAGS', 'CFLAGS', 'LDFLAGS'):
         env.merge(parse_flags(os.environ.get(key, ''), origin=key))
 
+    if args.cross_compile:
+        env['CROSS_COMPILE'] = args.cross_compile
     if args.cross_execute:
         env['CROSS_EXECUTE'] = args.cross_execute
     if args.platform:
@@ -77,6 +82,13 @@ def main():
         env[key.upper()] = value
 
     log = Logger(args.log)
+    if config.getboolean('cache', 'enabled', True) and args.cache:
+        marshaler = config.get('cache', 'marshaler', 'json')
+        log.write('cache: {} from {}\n'.format(marshaler, args.cache))
+        cache = Cache(args.platform, marshaler)
+        cache.open(args.cache)
+    else:
+        cache = dict()
 
     stages = {}
     for stage in config.stages():
@@ -94,7 +106,7 @@ def main():
                 stage, camel_case(stage)))
         else:
             # Create instance of the stage (once)
-            stages[stage] = stages[stage](config, env, log)
+            stages[stage] = stages[stage](config, cache, env, log)
 
     for name, stage in stages.items():
         log.write('executing stage: {}\n'.format(name))

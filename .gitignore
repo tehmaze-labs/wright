@@ -59,4 +59,5 @@ docs/_build/
 target/
 
 # Generated files
+*.cache
 test/template

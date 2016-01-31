@@ -192,7 +192,7 @@ class Env(Stage):
 
         elif check == 'versions':
             sources = self.config.getlist('env:versions', 'source')
-            git = self.config.getbool('env:versions', 'git', False)
+            git = self.config.getboolean('env:versions', 'git', False)
             for source in sources:
                 self.echo('versions from {}...'.format(source))
                 if self['versions'](source, git=git):
