@@ -84,8 +84,10 @@ class Flags(CheckExecOutput):
             run_args = tuple(shlex.split(command))
             output = super(Flags, self).__call__(run_args)
             if output is None:
+                self.have(name, False)
                 return False
 
+            self.have(name, True)
             output = output.strip()
             if output:
                 self.env.merge(parse_flags(output))
