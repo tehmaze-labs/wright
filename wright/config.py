@@ -26,6 +26,11 @@ class Config(RawConfigParser):
                     help='Build ' + ['with', 'without'][int(value)] + ' ' + key,
                 )
 
+    def getbool(self, section, option, default=False):
+        if not self.has_option(section, option):
+            return default
+        return parse_bool(self.get(section, option),
+            default=default, strict=False)
 
     def getlist(self, section, option):
         return [
