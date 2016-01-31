@@ -20,8 +20,8 @@ def main():
     group = parser.add_argument_group('wright options')
     group.add_argument('--help-options', action='store_true',
         help='show build options')
-    group.add_argument('--config', default='wright.conf', metavar='<file>',
-        help='wright configuration')
+    group.add_argument('--config', default='wright.ini', metavar='<file>',
+        help='wright configuration (default: wright.ini)')
     group.add_argument('--log', default='wright.log', metavar='<file>',
         help='wright log file (default: wright.log)')
     group.add_argument('--platform', default=platform, metavar='<name>',
