@@ -2,8 +2,7 @@ import os
 import shlex
 import subprocess
 
-import jinja2.exceptions
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
 from .base import Check, CheckExec, CheckExecOutput, Stage
 from ..util import parse_flags
@@ -84,7 +83,7 @@ class Generate(Check):
         env.globals['with'] = self._with
         try:
             out = env.get_template(source).render(env=self.env, **self.env)
-        except jinja2.exceptions.TemplateNotFound as error:
+        except TemplateNotFound as error:
             self.output.write('error: {} not found\n'.format(source))
             return False
 
