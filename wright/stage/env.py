@@ -25,13 +25,20 @@ class CheckWhich(CheckExec):
 class Generate(Check):
     order = 999
 
-    def _have(self, name):
+    def _have(self, name=None):
         """Check if a configure flag is set.
+
+        If called without argument, it returns all HAVE_* items.
 
         Example:
 
             {% if have('netinet/ip.h') %}...{% endif %}
         """
+        if name is None:
+            return (
+                (k, v) for k, v  in self.env.items()
+                if k.startswith('HAVE_')
+            )
         return self.env.get('HAVE_' + self.env_key(name)) == True
 
     def _lib(self, name, only_if_have=False):
@@ -51,23 +58,30 @@ class Generate(Check):
             return '-l' + name
         return ''
 
-    def _with(self, option):
+    def _with(self, option=None):
         """Check if a build option is enabled.
+
+        If called without argument, it returns all WITH_* items.
 
         Example:
 
             {% if with('foo') %}...{% endif %}
         """
+        if option is None:
+            return (
+                (k, v) for k, v in self.env.items()
+                if k.startswith('WITH_')
+            )
         return self.env.get('WITH_' + option.upper()) == True
 
     def __call__(self, target, source):
-        self.output.write('generate: {} -> {}\n'.format(source, target))
+        self.output.write('generate: {} from {}\n'.format(target, source))
         env = Environment(loader=FileSystemLoader('.'))
         env.globals['have'] = self._have
         env.globals['lib'] = self._lib
         env.globals['with'] = self._with
         try:
-            out = env.get_template(source).render(env=self.env)
+            out = env.get_template(source).render(env=self.env, **self.env)
         except jinja2.exceptions.TemplateNotFound as error:
             self.output.write('error: {} not found\n'.format(source))
             return False
