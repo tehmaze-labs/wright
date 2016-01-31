@@ -104,6 +104,10 @@ def main():
                     args.log))
                 return 1
 
+    for key in sorted(env):
+        if key.startswith('HAVE_') or key.startswith('WITH_'):
+            log.write('env: {}={}\n'.format(key, env[key]))
+
     return 0
 
 
