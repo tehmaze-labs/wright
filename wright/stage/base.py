@@ -155,8 +155,9 @@ class Stage(object):
         if not test.quiet:
             self.checking(' '.join([check, name]))
 
-        if test.cache and (check, name, args) in self.cache:
-            if self.cache[(check, name, args)]:
+        cache_key = (self.name, check, name, args)
+        if test.cache and cache_key in self.cache:
+            if self.cache[cache_key]:
                 if not test.quiet:
                     self.echo_result('yes', color='green', append=' (cached)\n')
                 return True
@@ -164,7 +165,7 @@ class Stage(object):
         result = test(name, args)
         if result:
             if test.cache:
-                self.cache[(check, name, args)] = result
+                self.cache[cache_key] = result
             if not test.quiet:
                 self.echo_result('yes', color='green')
             return True
