@@ -18,6 +18,7 @@ except NameError:
 
 class Check(object):
     order = 100
+    quiet = False
 
     def __init__(self, stage):
         self.stage = stage
@@ -141,7 +142,6 @@ class Stage(object):
     def _run_check(self, check, name, args, optional=False):
         self.output.write('stage {}.{}: run name={!r}, args={!r}\n'.format(
             self.name, check, name, args))
-        self.checking(' '.join([check, name]))
         try:
             test = self[check]
         except KeyError:
@@ -149,11 +149,15 @@ class Stage(object):
             self.echo('stage "{}" has no check "{}"\n'.format(self.name, check))
             return False
 
+        if not test.quiet:
+            self.checking(' '.join([check, name]))
         if test(name, args):
-            self.echo_result('yes', color='green')
+            if not test.quiet:
+                self.echo_result('yes', color='green')
             return True
         else:
-            self.echo_result('no', color='yellow' if optional else 'red')
+            if not test.quiet:
+                self.echo_result('no', color='yellow' if optional else 'red')
             return False
 
 
