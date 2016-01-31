@@ -50,11 +50,21 @@ class Generate(Check):
             return '-l' + name
         return ''
 
+    def _with(self, option):
+        """Check if a build option is enabled.
+
+        Example:
+
+            {% if with('foo') %}...{% endif %}
+        """
+        return self.env.get('WITH_' + option.upper()) == True
+
     def __call__(self, target, source):
         self.output.write('generate: {} -> {}\n'.format(source, target))
-        env = Environment(loader=FileSystemLoader('.'), trim_blocks=True)
+        env = Environment(loader=FileSystemLoader('.'))
         env.globals['have'] = self._have
         env.globals['lib'] = self._lib
+        env.globals['with'] = self._with
         try:
             out = env.get_template(source).render(env=self.env)
         except jinja2.exceptions.TemplateNotFound as error:

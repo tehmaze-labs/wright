@@ -12,22 +12,31 @@ from .util import Environment, camel_case, detect_platform, parse_flags, import_
 def main():
     platform = detect_platform()
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        epilog='to see the full list of build options, run with --help-options',
+        add_help=False,
+    )
     # Default options
-    parser.add_argument('--config', default='wright.conf', metavar='FILE',
+    group = parser.add_argument_group('wright options')
+    group.add_argument('--help-options', action='store_true',
+        help='show build options')
+    group.add_argument('--config', default='wright.conf', metavar='<file>',
         help='wright configuration')
-    parser.add_argument('--log', default='wright.log', metavar='FILE',
+    group.add_argument('--log', default='wright.log', metavar='<file>',
         help='wright log file (default: wright.log)')
-    parser.add_argument('--platform', default=platform,
+    group.add_argument('--platform', default=platform, metavar='<name>',
         help='target platform (default: {})'.format(platform))
     # Cross compiling options
-    parser.add_argument('--cross-execute', default='',
+    group = parser.add_argument_group('compiler options')
+    group.add_argument('--cross-execute', default='', metavar='<..>',
         help='cross execute wrapper (default: none)')
     # The rest of the arguments may be environment settings
-    parser.add_argument('env', metavar='KEY=VALUE', nargs='*',
+    parser.add_argument('env', metavar='key=value', nargs='*',
         help='additional environment settings')
 
-    args = parser.parse_args()
+    # Parse the arguments that are known to us, so we can extend them from our
+    # configuration file.
+    args, remaining_args = parser.parse_known_args()
 
     env = Environment()
     env.update(os.environ)
@@ -50,6 +59,21 @@ def main():
     if not config.read(args.config):
         print('unable to parse configuration file {}'.format(args.config))
         return 1
+
+    # Now is a good time to parse the rest of the arguments
+    options_parser = argparse.ArgumentParser(parents=[parser])
+    options_parser.set_defaults(**args.__dict__)
+    config.add_arguments(options_parser)
+    args = options_parser.parse_args(remaining_args)
+
+    if args.help_options:
+        options_parser.print_help()
+        return 0
+
+    # Feed back the build options to our environment
+    for key, value in args.__dict__.items():
+        if key.startswith('with_'):
+            env[key.upper()] = value
 
     log = Logger(args.log)
 

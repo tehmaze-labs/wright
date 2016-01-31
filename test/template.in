@@ -13,3 +13,6 @@ Example generating config.h:
 {% if have('errno.h') %}
 All looking good \o/
 {% endif %}
+
+with foo: {% if with('foo') %}yes{% else %}no{% endif %}
+with bar: {% if with('bar') %}yes{% else %}no{% endif %}

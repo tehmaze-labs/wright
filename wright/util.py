@@ -115,6 +115,17 @@ def import_module(name):
     return module
 
 
+def parse_bool(value, default=True, strict=True):
+    if value.lower() in ('true', 'yes', 'on', '1'):
+        return True
+    elif value.lower() in ('false', 'no', 'off', '0'):
+        return False
+    elif strict:
+        raise ValueError(value)
+    else:
+        return default
+
+
 def parse_flags(*flags, **kwargs):
     """Parse compile flags."""
 

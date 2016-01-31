@@ -3,7 +3,7 @@ try:
 except ImportError:
     from ConfigParser import RawConfigParser
 
-from .util import yield_from
+from .util import parse_bool, yield_from
 
 
 class Config(RawConfigParser):
@@ -11,6 +11,21 @@ class Config(RawConfigParser):
         RawConfigParser.__init__(self)
         self.env = env
         self.platform = platform
+
+    def add_arguments(self, parser):
+        group = parser.add_argument_group('build options')
+        if self.has_option('configure', 'with'):
+            for arg in self.getlist('configure', 'with'):
+                key, value = arg.split(':', 1)
+                value = parse_bool(value.strip(), strict=False)
+                group.add_argument(
+                    ['--with-', '--without-'][int(value)] + key,
+                    default=value,
+                    dest='with_' + key,
+                    action='store_' + ['true', 'false'][int(value)],
+                    help='Build ' + ['with', 'without'][int(value)] + ' ' + key,
+                )
+
 
     def getlist(self, section, option):
         return [
