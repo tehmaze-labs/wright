@@ -10,6 +10,7 @@ from ..util import parse_flags
 
 
 class CheckWhich(CheckExec):
+    cache = False
     order = 10
 
     def __call__(self, binary, args=()):
@@ -23,6 +24,7 @@ class CheckWhich(CheckExec):
 
 
 class Generate(Check):
+    cache = False
     order = 999
 
     def _have(self, name=None):
@@ -92,6 +94,7 @@ class Generate(Check):
 
 
 class Flags(CheckExecOutput):
+    cache = False
     order = 20
 
     def __call__(self, name, args):
@@ -111,6 +114,7 @@ class Flags(CheckExecOutput):
 
 
 class Set(Check):
+    cache = False
     order = 10
     quiet = True
 
@@ -120,6 +124,7 @@ class Set(Check):
 
 
 class Versions(Check):
+    cache = False
 
     """Generate semantic version numbers from a versions file.
 

@@ -5,6 +5,7 @@ from ..util import parse_flags
 
 
 class CheckEnv(Check):
+    cache = False
     order = 50
     quiet = True
 
