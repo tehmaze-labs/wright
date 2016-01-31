@@ -174,6 +174,7 @@ class TempFile:
             prefix=self.prefix)
         if self.content is not None:
             os.write(fd, self.content)
+        os.close(fd)
         return self
 
     def __exit__(self, typ, value, traceback):
