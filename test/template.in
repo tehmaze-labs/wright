@@ -16,3 +16,5 @@ All looking good \o/
 
 with foo: {% if with('foo') %}yes{% else %}no{% endif %}
 with bar: {% if with('bar') %}yes{% else %}no{% endif %}
+
+version: {{ env.WRIGHT_VERSION }}
