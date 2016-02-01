@@ -4,6 +4,12 @@ import shlex
 import sys
 
 
+if sys.hexversion < 0x03000000:
+    STR_TYPES = (str, unicode)
+else:
+    STR_TYPES = str
+
+
 class OrderedSet(collections.MutableSet):
     def __init__(self, iterable=None):
         self.end = end = []
@@ -172,7 +178,7 @@ def parse_flags(*flags, **kwargs):
         if not arg:
             return
 
-        if not isinstance(arg, str):
+        if not isinstance(arg, STR_TYPES):
             for item in arg:
                 _parse(arg)
             return
@@ -236,9 +242,9 @@ def parse_flags(*flags, **kwargs):
 
             elif item[:2] == '-D':
                 if item[2:]:
-                    parsed['INCLUDES'].add(item[2:])
+                    parsed['DEFINES'].add(item[2:])
                 else:
-                    curr = 'INCLUDES'
+                    curr = 'DEFINES'
 
             elif item == '-framework':
                 curr = 'FRAMEWORKS'
