@@ -25,12 +25,6 @@ class CheckCompile(CheckExec):
         cc = self.env.get('CC', 'gcc')
         compiler = cross_compile + cc
 
-        for key in ('CFLAGS', 'LDFLAGS', 'LIBS'):
-            try:
-                args += tuple(self.env[key])
-            except KeyError:
-                pass
-
         for path in self.env.get('LIBPATH', []):
             args += ('-L' + path,)
 
@@ -54,6 +48,7 @@ class CheckCompile(CheckExec):
 
 
 class CheckDefine(CheckCompile):
+    order = 100
     source = '''
 int main() {
 #if defined(%s)
@@ -84,6 +79,7 @@ class CheckFeature(CheckCompile):
 
 
 class CheckHeader(CheckCompile):
+    order = 200
     source = '''
 #include <%s>
 int main() { return 0; }
@@ -99,6 +95,7 @@ int main() { return 0; }
 
 
 class CheckLibrary(CheckCompile):
+    order = 500
     source = '''
 int main() {
     return 0;
@@ -118,6 +115,69 @@ int main() {
             )
 
 
+class CheckType(CheckCompile):
+    """Check for type.
+
+    Example::
+
+        [c:type]
+        required = uint8_t: inttypes.h
+    """
+
+    order = 300
+    source = '''
+int main() {
+    %(ctype)s check_type_test;
+    return 0;
+}
+'''
+
+    def __call__(self, ctype, headers=()):
+        source = ''
+        for header in headers:
+            source += '#include <%s>\n' % (header,)
+        source += self.source % {'ctype': ctype}
+        with TempFile('type', '.c', content=source) as temp:
+            args = ('-Wno-unused-variable',)
+            return self.have(
+                ctype,
+                super(CheckType, self).__call__(temp.filename, args),
+            )
+
+
+class CheckMember(CheckCompile):
+    """Check for type members, such as structs.
+
+    Example::
+
+        [c:member]
+        required = struct termios.c_ispeed: linux/termios.h
+    """
+
+    order = 350
+    source = '''
+int main() {
+    %(ctype)s check_type_test;
+    (void)check_type_test.%(member)s
+    return 0;
+}
+'''
+
+    def __call__(self, ctype_with_member, headers=()):
+        attr = {}
+        attr['ctype'], attr['member'] = ctype_with_member.split('.', 1)
+        source = ''
+        for header in headers:
+            source += '#include <%s>\n' % (header,)
+        source += self.source % attr
+        with TempFile('type', '.c', content=source) as temp:
+            args = ('-Wno-unused-variable',)
+            return self.have(
+                ctype_with_member,
+                super(CheckMember, self).__call__(temp.filename, args),
+            )
+
+
 class C(Stage):
     def __init__(self, *args, **kwargs):
         super(C, self).__init__(*args, **kwargs)
@@ -128,4 +188,6 @@ class C(Stage):
             'feature': CheckFeature(self),
             'header':  CheckHeader(self),
             'library': CheckLibrary(self),
+            'type':    CheckType(self),
+            'member':  CheckMember(self),
         }
