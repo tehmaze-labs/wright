@@ -11,6 +11,8 @@ class Logger(object):
         atexit.register(self.close)
         self.write('starting: on {}\n'.format(platform.uname()[3]))
         self.write('called as: {}\n'.format(' '.join(sys.argv)))
+        self.write('python: {} version {:x}\n'.format(
+            sys.executable, sys.hexversion))
 
     def close(self):
         self.fd.close()
