@@ -158,7 +158,7 @@ class CheckMember(CheckCompile):
     source = '''
 int main() {
     %(ctype)s check_type_test;
-    (void)check_type_test.%(member)s
+    (void)check_type_test.%(member)s;
     return 0;
 }
 '''
