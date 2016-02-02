@@ -16,15 +16,18 @@ class CheckWhich(CheckExec):
         for path in self.env['PATH'].split(':'):
             full = os.path.join(path, binary)
             if os.access(full, os.X_OK):
-                if super(CheckWhich, self).__call__((full,) + args):
-                    return self.have(binary, True)
+                return super(CheckWhich, self).__call__((full,) + args)
 
-        return self.have(binary, False)
+        return False
 
 
 class Generate(Check):
     cache = False
     order = 999
+
+    def have(self, *args, **kwargs):
+        """Do not export any HAVE_* variables."""
+        pass
 
     def _have(self, name=None):
         """Check if a configure flag is set.
@@ -101,10 +104,8 @@ class Flags(CheckExecOutput):
             run_args = tuple(shlex.split(command))
             output = super(Flags, self).__call__(run_args)
             if output is None:
-                self.have(name, False)
                 return False
 
-            self.have(name, True)
             output = output.strip()
             if output:
                 self.env.merge(parse_flags(output))
@@ -116,6 +117,10 @@ class Set(Check):
     cache = False
     order = 10
     quiet = True
+
+    def have(self, *args, **kwargs):
+        """Do not export any HAVE_* variables."""
+        pass
 
     def __call__(self, key, value):
         self.env[key] = ' '.join(value)
@@ -134,6 +139,10 @@ class Versions(Check):
     Optionally, automatic patch version and tagging can be done if executed
     from the root of a git tree.
     """
+
+    def have(self, *args, **kwargs):
+        """Do not export any HAVE_* variables."""
+        pass
 
     def __call__(self, source, git=True):
         tag = ''

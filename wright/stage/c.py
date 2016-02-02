@@ -62,20 +62,14 @@ int main() {
     def __call__(self, name, args=()):
         source = self.source % (name,)
         with TempFile('define', '.c', content=source) as temp:
-            return self.have(
-                name,
-                super(CheckDefine, self).__call__(temp.filename, args, run=True),
-            )
+            return super(CheckDefine, self).__call__(temp.filename, args, run=True)
 
 
 class CheckFeature(CheckCompile):
     def __call__(self, feature, args):
         source = args[0]
         args = args[1:]
-        return self.have(
-            feature,
-            super(CheckFeature, self).__call__(source, args, run=True),
-        )
+        return super(CheckFeature, self).__call__(source, args, run=True)
 
 
 class CheckHeader(CheckCompile):
@@ -88,10 +82,7 @@ int main() { return 0; }
     def __call__(self, name, args=()):
         source = self.source % (name,)
         with TempFile('header', '.c', content=source) as temp:
-            return self.have(
-                name,
-                super(CheckHeader, self).__call__(temp.filename, args),
-            )
+            return super(CheckHeader, self).__call__(temp.filename, args)
 
 
 class CheckLibrary(CheckCompile):
@@ -102,6 +93,9 @@ int main() {
 }
 '''
 
+    def have(self, what, success):
+        return super(CheckLibrary, self).have('lib' + what, success)
+
     def __call__(self, name, headers=()):
         source = ''
         for header in headers:
@@ -109,10 +103,7 @@ int main() {
         source += self.source
         with TempFile('library', '.c', content=source) as temp:
             args = ('-l' + name,)
-            return self.have(
-                'lib' + name,
-                super(CheckLibrary, self).__call__(temp.filename, args),
-            )
+            return super(CheckLibrary, self).__call__(temp.filename, args)
 
 
 class CheckType(CheckCompile):
@@ -139,10 +130,7 @@ int main() {
         source += self.source % {'ctype': ctype}
         with TempFile('type', '.c', content=source) as temp:
             args = ('-Wno-unused-variable',)
-            return self.have(
-                ctype,
-                super(CheckType, self).__call__(temp.filename, args),
-            )
+            return super(CheckType, self).__call__(temp.filename, args)
 
 
 class CheckMember(CheckCompile):
@@ -172,10 +160,7 @@ int main() {
         source += self.source % attr
         with TempFile('type', '.c', content=source) as temp:
             args = ('-Wno-unused-variable',)
-            return self.have(
-                ctype_with_member,
-                super(CheckMember, self).__call__(temp.filename, args),
-            )
+            return super(CheckMember, self).__call__(temp.filename, args)
 
 
 class C(Stage):

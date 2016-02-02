@@ -29,7 +29,6 @@ class Check(object):
     def env_key(self, item):
         return RE_ENV_UNSAFE.sub('_', item).strip('_').upper()
 
-
     def have(self, what, success):
         success = bool(success)
         self.env['HAVE_' + self.env_key(what)] = success
@@ -158,11 +157,13 @@ class Stage(object):
         cache_key = (self.name, check, name, args)
         if test.cache and cache_key in self.cache:
             if self.cache[cache_key]:
+                test.have(name, True)
                 if not test.quiet:
                     self.echo_result('yes', color='green', append=' (cached)\n')
                 return True
 
         result = test(name, args)
+        test.have(name, result)
         if result:
             if test.cache:
                 self.cache[cache_key] = result
