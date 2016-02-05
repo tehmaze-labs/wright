@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name='wright',
-    version='0.1.6',
+    version='0.1.7',
     description='Leight weight (C) project configurator',
     long_description="""
 ⚒ Wright
