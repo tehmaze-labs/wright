@@ -67,6 +67,9 @@ def main():
         print('unable to parse configuration file {}'.format(args.config))
         return 1
 
+    # Check our configuration file mtime
+    config_time = os.stat(args.config).st_mtime
+
     # Now is a good time to parse the rest of the arguments
     options_parser = argparse.ArgumentParser(parents=[parser])
     options_parser.set_defaults(**args.__dict__)
@@ -85,8 +88,8 @@ def main():
     if config.getboolean('cache', 'enabled', True) and args.cache:
         marshaler = config.get('cache', 'marshaler', 'json')
         log.write('cache: {} from {}\n'.format(marshaler, args.cache))
-        cache = Cache(args.platform, marshaler)
-        cache.open(args.cache)
+        cache = Cache(args.platform, marshaler=marshaler)
+        cache.open(args.cache, not_before=config_time)
     else:
         cache = dict()
 

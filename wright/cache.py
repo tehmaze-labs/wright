@@ -3,6 +3,7 @@ import json
 import os
 import pickle
 import platform as pyplatform
+import sys
 
 
 class Cache(object):
@@ -44,8 +45,8 @@ class Cache(object):
     def values(self):
         raise NotImplementedError()
 
-    def open(self, filename):
-        self.load(filename)
+    def open(self, filename, not_before=None):
+        self.load(filename, not_before)
         atexit.register(lambda: self.save(filename))
 
     def pop(self, key, default=None):
@@ -56,9 +57,17 @@ class Cache(object):
             value = default
         return value
 
-    def load(self, filename):
+    def load(self, filename, not_before=None):
+        sys.stdout.write('loading cache from {}... '.format(filename))
         if not os.path.isfile(filename):
+            sys.stdout.write('skipped (not found)\n')
             return
+        if not_before is not None:
+            cache_time = os.stat(filename).st_mtime
+            if cache_time < not_before:
+                sys.stdout.write('skipped (config is more recent than cache)\n')
+                return
+
         with open(filename, 'rb') as fp:
             if self.marshaler == 'json':
                 self.cached.update(json.load(fp))
@@ -67,6 +76,8 @@ class Cache(object):
             else:
                 raise TypeError('Marshaler "{}" not supported'.format(
                     self.marshaler))
+
+        sys.stdout.write('ok\n')
 
     def save(self, filename):
         with open(filename, 'wb') as fp:
