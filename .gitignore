@@ -60,4 +60,5 @@ target/
 
 # Generated files
 *.cache
+*.swp
 test/template
