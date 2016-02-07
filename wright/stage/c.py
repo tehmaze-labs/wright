@@ -62,7 +62,7 @@ int main() {
     def __call__(self, name, headers=()):
         source = self.source % (name,)
         for header in headers:
-            source = '#include <{}>\n'.format(header)
+            source = '#include <{}>\n'.format(header) + source
         with TempFile('define', '.c', content=source) as temp:
             return super(CheckDefine, self).__call__(temp.filename, run=True)
 
